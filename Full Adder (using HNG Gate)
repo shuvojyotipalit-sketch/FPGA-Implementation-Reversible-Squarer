@@ -1,0 +1,10 @@
+module full_adder_hng (
+    input  A, B, Cin,
+    output Sum, Cout
+);
+    wire M_garbage, N_garbage; // pass-throughs of A and B
+    hng_gate HNG (
+        .U(A), .V(B), .W(Cin), .X(1'b0),
+        .M(M_garbage), .N(N_garbage), .O(Sum), .P(Cout)
+    );
+endmodule
