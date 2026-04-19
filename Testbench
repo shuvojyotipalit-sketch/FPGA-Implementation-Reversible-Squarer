@@ -1,0 +1,37 @@
+module tb_squarer_4x4;
+    reg  [3:0] a;
+    wire [7:0] y;
+
+    squarer_4x4 DUT (.a(a), .y(y));
+
+    integer i;
+    initial begin
+        $display("=== 4x4 Reversible Squarer Testbench ===");
+        $display(" Input | Expected | Got  | Status");
+        $display("-------+----------+------+--------");
+
+        // Sweep all 16 inputs
+        for (i = 0; i < 16; i = i + 1) begin
+            a = i[3:0]; #10;
+            $display("  %2d   |   %4d   | %4d | %s",
+                a, a*a, y,
+                (y == a*a) ? "PASS" : "FAIL");
+        end
+
+        // Paper's 3 specific test cases
+        $display("\n--- Paper Test Cases ---");
+        a = 4'b0111; #10;
+        $display("0111 -> %08b  (exp 00110001) %s",
+            y, (y==8'b00110001)?"PASS":"FAIL");
+
+        a = 4'b1010; #10;
+        $display("1010 -> %08b  (exp 01100100) %s",
+            y, (y==8'b01100100)?"PASS":"FAIL");
+
+        a = 4'b1101; #10;
+        $display("1101 -> %08b  (exp 10101001) %s",
+            y, (y==8'b10101001)?"PASS":"FAIL");
+
+        $finish;
+    end
+endmodule
