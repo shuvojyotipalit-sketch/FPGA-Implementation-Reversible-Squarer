@@ -1,0 +1,8 @@
+module peres_gate (
+    input  U, V, W,
+    output M, N, O
+);
+    assign M = U;
+    assign N = U ^ V;
+    assign O = (U & V) ^ W;
+endmodule
