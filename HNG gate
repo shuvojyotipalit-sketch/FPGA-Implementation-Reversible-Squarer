@@ -1,0 +1,9 @@
+module hng_gate (
+    input  U, V, W, X,
+    output M, N, O, P
+);
+    assign M = U;
+    assign N = V;
+    assign O = U ^ V ^ W;
+    assign P = ((U ^ V) & W) ^ (U & V) ^ X;
+endmodule
