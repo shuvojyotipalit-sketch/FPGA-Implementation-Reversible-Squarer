@@ -1,0 +1,72 @@
+module squarer_4x4 (
+    input  [3:0] a,
+    output [7:0] y
+);
+    wire a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
+
+    // ── Step 1: Partial products ──────────────────────────
+    wire m1, m2, m3, m4, m5, m6;
+    partial_product_gen PPG (
+        .a0(a0), .a1(a1), .a2(a2), .a3(a3),
+        .m1(m1), .m2(m2), .m3(m3),
+        .m4(m4), .m5(m5), .m6(m6)
+    );
+
+    // ── Step 2: Bit 0 — a0² = a0 ─────────────────────────
+    assign y[0] = a0;
+
+    // ── Step 3: Bit 1 — 2·a0·a1 shifts left → always 0 ──
+    assign y[1] = 1'b0;
+
+    // ── Step 4: Bit 2 — HA(a1, m1) ───────────────────────
+    // a1² = a1 (weight 2), m1 carry-in from weight-1 shift
+    wire c2;
+    half_adder_peres HA2 (
+        .A(a1), .B(m1),
+        .Sum(y[2]), .Cout(c2)
+    );
+
+    // ── Step 5: Bit 3 — FA(c2, m2, m3) + HA(s3a, m4) ────
+    // 2·m2 → m2 at wt-3;  2·m3 → m3 at wt-3;  2·m4 → m4 at wt-3
+    wire s3a, c3a, c3b;
+    full_adder_hng FA3 (
+        .A(c2), .B(m2), .Cin(m3),
+        .Sum(s3a), .Cout(c3a)
+    );
+    half_adder_peres HA3 (
+        .A(s3a), .B(m4),
+        .Sum(y[3]), .Cout(c3b)
+    );
+
+    // ── Step 6: Bit 4 — FA(a2, c3a, c3b) + HA(s4a, m5) ──
+    // a2² = a2 (weight 4);  2·m5 → m5 at wt-4
+    wire s4a, c4a, c4b;
+    full_adder_hng FA4 (
+        .A(a2), .B(c3a), .Cin(c3b),
+        .Sum(s4a), .Cout(c4a)
+    );
+    half_adder_peres HA4 (
+        .A(s4a), .B(m5),
+        .Sum(y[4]), .Cout(c4b)
+    );
+
+    // ── Step 7: Bit 5 — FA(c4a, c4b, m6) ────────────────
+    // 2·m6 → m6 at wt-5
+    wire c5;
+    full_adder_hng FA5 (
+        .A(c4a), .B(c4b), .Cin(m6),
+        .Sum(y[5]), .Cout(c5)
+    );
+
+    // ── Step 8: Bit 6 — HA(a3, c5) ───────────────────────
+    // a3² = a3 (weight 6)
+    wire c6;
+    half_adder_peres HA6 (
+        .A(a3), .B(c5),
+        .Sum(y[6]), .Cout(c6)
+    );
+
+    // ── Step 9: Bit 7 — final carry ──────────────────────
+    assign y[7] = c6;
+
+endmodule
