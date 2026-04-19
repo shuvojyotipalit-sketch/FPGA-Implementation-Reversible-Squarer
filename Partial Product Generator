@@ -1,0 +1,32 @@
+module partial_product_gen (
+    input  a0, a1, a2, a3,
+    output m1, m2, m3, m4, m5, m6
+);
+    // Unused pass-through outputs (garbage)
+    wire g1, g2, g3, g4, g5, g6;
+    wire n1, n2, n3, n4, n5, n6;
+
+    // m1 = a0 AND a1
+    peres_gate PG1 (.U(a0), .V(a1), .W(1'b0),
+                    .M(g1), .N(n1), .O(m1));
+
+    // m2 = a0 AND a2
+    peres_gate PG2 (.U(a0), .V(a2), .W(1'b0),
+                    .M(g2), .N(n2), .O(m2));
+
+    // m3 = a1 AND a2
+    peres_gate PG3 (.U(a1), .V(a2), .W(1'b0),
+                    .M(g3), .N(n3), .O(m3));
+
+    // m4 = a0 AND a3
+    peres_gate PG4 (.U(a0), .V(a3), .W(1'b0),
+                    .M(g4), .N(n4), .O(m4));
+
+    // m5 = a1 AND a3
+    peres_gate PG5 (.U(a1), .V(a3), .W(1'b0),
+                    .M(g5), .N(n5), .O(m5));
+
+    // m6 = a2 AND a3
+    peres_gate PG6 (.U(a2), .V(a3), .W(1'b0),
+                    .M(g6), .N(n6), .O(m6));
+endmodule
